@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:VideoPlayerDemos"
+             xmlns:media="clr-namespace:MediaHelpers"
+             x:Class="VideoPlayerDemos.MainPage">
+
+    <media:VideoPlayer>
+        <!--<media:VideoPlayer.Source>
+            <media:UriVideoSource Uri="https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4" />
+        </media:VideoPlayer.Source>-->
+    </media:VideoPlayer>
+
+</ContentPage>
