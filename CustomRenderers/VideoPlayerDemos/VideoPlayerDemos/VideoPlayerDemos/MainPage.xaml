@@ -5,10 +5,47 @@
              xmlns:media="clr-namespace:MediaHelpers"
              x:Class="VideoPlayerDemos.MainPage">
 
-    <media:VideoPlayer>
-        <!--<media:VideoPlayer.Source>
-            <media:UriVideoSource Uri="https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4" />
-        </media:VideoPlayer.Source>-->
-    </media:VideoPlayer>
+    <!--<media:VideoPlayer AutoPlay="True">
+        <media:VideoPlayer.Source>
+            <media:UriVideoSource Uri="{x:Static local:MainPage.ElephantsDream}" />
+        </media:VideoPlayer.Source>
+    </media:VideoPlayer>-->
+
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <media:VideoPlayer x:Name="videoPlayer"
+                           Grid.Row="0"                 BackgroundColor="Aqua"
+                           AutoPlay="False" 
+                           AreTransportControlsEnabled="False">
+            <media:VideoPlayer.Source>
+                <media:UriVideoSource Uri="{x:Static local:MainPage.ElephantsDream}" />
+            </media:VideoPlayer.Source>
+        </media:VideoPlayer>
+
+        <StackLayout Grid.Row="1"
+                     Orientation="Horizontal">
+            <Button Text="Play"
+                    Clicked="OnPlayButtonClicked" />
+
+            <Button Text="Pause"
+                    Clicked="OnPauseButtonClicked" />
+
+            <Button Text="Stop"
+                    Clicked="OnStopButtonClicked" />
+
+            <Label Text="{Binding Source={x:Reference videoPlayer},
+                                  Path=Duration,
+                                  StringFormat='{0}'}" />
+        </StackLayout>
+    </Grid>
+
+   
+    
 
 </ContentPage>

@@ -9,7 +9,7 @@ namespace MediaHelpers
 {
     public class VideoSource : Element
     {
-        public static VideoSource FromUri(Uri uri)
+        public static VideoSource FromUri(string uri)
         {
             return new UriVideoSource { Uri = uri };
         }

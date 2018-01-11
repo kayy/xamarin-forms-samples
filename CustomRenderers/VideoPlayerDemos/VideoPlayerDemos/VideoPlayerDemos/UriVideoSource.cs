@@ -10,12 +10,12 @@ namespace MediaHelpers
     public class UriVideoSource : VideoSource
     {
         public static readonly BindableProperty UriProperty =
-            BindableProperty.Create("Uri", typeof(Uri), typeof(UriVideoSource));
+            BindableProperty.Create("Uri", typeof(string), typeof(UriVideoSource));
 
-        public Uri Uri
+        public string Uri
         {
             set { SetValue(UriProperty, value); }
-            get { return (Uri)GetValue(UriProperty); }
+            get { return (string)GetValue(UriProperty); }
         }
     }
 }
