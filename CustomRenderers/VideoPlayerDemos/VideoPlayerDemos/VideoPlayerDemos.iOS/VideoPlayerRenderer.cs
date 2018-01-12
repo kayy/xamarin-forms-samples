@@ -24,13 +24,7 @@ namespace MediaHelpers.iOS
     {
         AVPlayerViewController _playerViewController;       // solely for ViewController property
 
-        public override UIViewController ViewController
-        {
-            get
-            {
-                return _playerViewController;
-            }
-        }
+        public override UIViewController ViewController => _playerViewController;
 
         protected override void OnElementChanged(ElementChangedEventArgs<VideoPlayer> args)
         {
@@ -50,6 +44,8 @@ namespace MediaHelpers.iOS
 
             if (args.OldElement != null)
             {
+                args.OldElement.UpdateStatus -= OnUpdateStatus;
+
                 args.OldElement.PlayRequested -= OnPlayRequested;
                 args.OldElement.PauseRequested -= OnPauseRequested;
                 args.OldElement.StopRequested -= OnStopRequested;
@@ -59,6 +55,8 @@ namespace MediaHelpers.iOS
             {
                 SetSource();
                 SetAreTransportControlsEnabled();
+
+                args.NewElement.UpdateStatus += OnUpdateStatus;
 
                 args.NewElement.PlayRequested += OnPlayRequested;
                 args.NewElement.PauseRequested += OnPauseRequested;
@@ -102,17 +100,24 @@ namespace MediaHelpers.iOS
                 {
                     playerItem = new AVPlayerItem(asset);
 
-                    ((IVideoController)Element).Duration = TimeSpan.FromMilliseconds(playerItem.Duration.Value);
+                    ((IVideoPlayerController)Element).Duration = TimeSpan.FromMilliseconds(playerItem.Duration.Value);
 
                     observer = playerItem.AddObserver("duration", NSKeyValueObservingOptions.Initial, 
                         
 
                         (sender) =>
                                         {
-                                            ((IVideoController)Element).Duration = TimeSpan.FromMilliseconds(playerItem.Duration.Value);
-
+                                            ((IVideoPlayerController)Element).Duration = TimeSpan.FromMilliseconds(playerItem.Duration.Value);
+                                            System.Diagnostics.Debug.WriteLine(TimeSpan.FromMilliseconds(playerItem.Duration.Value));
                                         });
-                    
+/*
+                    timeObserver = playerItem.AddObserver("currenttime", NSKeyValueObservingOptions.New,
+                        (sender) =>
+                        {
+                            System.Diagnostics.Debug.WriteLine(TimeSpan.FromMilliseconds(playerItem.CurrentTime.Value));
+
+                        });
+  */                  
                 }
             }
             
@@ -127,6 +132,7 @@ namespace MediaHelpers.iOS
         }
 
         private IDisposable observer;
+    //    private IDisposable timeObserver;
 /*
         public void Observer(NSObservedChange nsObservedChange)
         {
@@ -136,6 +142,13 @@ namespace MediaHelpers.iOS
         void SetAreTransportControlsEnabled()
         {
             ((AVPlayerViewController)ViewController).ShowsPlaybackControls = Element.AreTransportControlsEnabled;
+        }
+
+        // Event handler to update status
+        void OnUpdateStatus(object sender, EventArgs args)
+        {
+            ((IElementController)Element).SetValueFromRenderer(VideoPlayer.PositionProperty,
+                TimeSpan.FromSeconds(((AVPlayerViewController)ViewController).Player.CurrentTime.Seconds));
         }
 
         // Event handlers to implement methods

@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace MediaHelpers
 { 
-    public interface IVideoController
+    public interface IVideoPlayerController
     {
-        // bool CanPause { set; get; }
+        bool CanPause { set; get; }
+
+        bool CanSeek { set; get; }
 
 
             TimeSpan Duration { set; get; }

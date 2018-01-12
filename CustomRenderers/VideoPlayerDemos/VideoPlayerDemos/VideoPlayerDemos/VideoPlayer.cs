@@ -7,8 +7,20 @@ using Xamarin.Forms;
 
 namespace MediaHelpers
 {
-    public class VideoPlayer : View, IVideoController
+    public class VideoPlayer : View, IVideoPlayerController
     {
+        public event EventHandler UpdateStatus;
+
+        public VideoPlayer()
+        {
+            Device.StartTimer(TimeSpan.FromMilliseconds(100), () =>
+            {
+                UpdateStatus?.Invoke(this, EventArgs.Empty);
+                return true;
+            });
+        }
+
+
         public static readonly BindableProperty SourceProperty =
             BindableProperty.Create("Source", typeof(VideoSource), typeof(VideoPlayer), null);
 
@@ -36,6 +48,42 @@ namespace MediaHelpers
             get { return (bool)GetValue(AreTransportControlsEnabledProperty); }
         }
 
+        // CanPause read-only property
+        private static readonly BindablePropertyKey CanPausePropertyKey =
+            BindableProperty.CreateReadOnly("CanPause", typeof(bool), typeof(VideoPlayer), false);
+
+        public static readonly BindableProperty CanPauseProperty = CanPausePropertyKey.BindableProperty;
+
+        public bool CanPause
+        {
+            get { return (bool)GetValue(CanPauseProperty); }
+        }
+
+        bool IVideoPlayerController.CanPause
+        {
+            set { SetValue(CanPausePropertyKey, value); }
+            get { return CanPause; }
+        }
+
+        // CanSeek read-only property
+        private static readonly BindablePropertyKey CanSeekPropertyKey =
+            BindableProperty.CreateReadOnly("CanSeek", typeof(bool), typeof(VideoPlayer), false);
+
+        public static readonly BindableProperty CanSeekProperty = CanSeekPropertyKey.BindableProperty;
+
+        public bool CanSeek
+        {
+            get { return (bool)GetValue(CanSeekProperty); }
+        }
+
+        bool IVideoPlayerController.CanSeek
+        {
+            set { SetValue(CanSeekPropertyKey, value); }
+            get { return CanSeek; }
+        }
+
+
+        // Duration read-only property
         private static readonly BindablePropertyKey DurationPropertyKey =
             BindableProperty.CreateReadOnly("Duration", typeof(TimeSpan), typeof(VideoPlayer), new TimeSpan());
 
@@ -46,10 +94,20 @@ namespace MediaHelpers
             get { return (TimeSpan)GetValue(DurationProperty); }
         }
 
-        TimeSpan IVideoController.Duration
+        TimeSpan IVideoPlayerController.Duration
         {
             set { SetValue(DurationPropertyKey, value); }
             get { return Duration; }
+        }
+
+        // Position property
+        public static readonly BindableProperty PositionProperty =
+            BindableProperty.Create("Position", typeof(TimeSpan), typeof(VideoPlayer), new TimeSpan());
+
+        public TimeSpan Position
+        {
+            set { SetValue(PositionProperty, value); }
+            get { return (TimeSpan)GetValue(PositionProperty); }
         }
 
         // Methods handled by renderers

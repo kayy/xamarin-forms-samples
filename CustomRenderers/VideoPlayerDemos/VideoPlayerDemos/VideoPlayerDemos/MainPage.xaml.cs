@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
+using MediaHelpers;
+
 namespace VideoPlayerDemos
 {
     public partial class MainPage : ContentPage
@@ -31,6 +33,15 @@ namespace VideoPlayerDemos
         void OnStopButtonClicked(object sender, EventArgs args)
         {
             videoPlayer.Stop();
+        }
+
+        async void OnLoadButtonClicked(object sender, EventArgs args)
+        {
+            // disable button
+
+            string filename = await DependencyService.Get<IVideoPicker>().GetVideoFileAsync();
+
+            System.Diagnostics.Debug.WriteLine(filename);
         }
     }
 }

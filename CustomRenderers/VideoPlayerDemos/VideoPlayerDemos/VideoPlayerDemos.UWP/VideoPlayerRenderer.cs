@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Media.Core;
 using Windows.UI.Xaml.Controls;
+using Xamarin.Forms;
 using Xamarin.Forms.Platform.UWP;
 
 [assembly: ExportRenderer(typeof(MediaHelpers.VideoPlayer),
@@ -27,7 +28,7 @@ namespace MediaHelpers.UWP
 
                 mediaElement.MediaOpened += (sender, e) =>
                 {
-                    ((IVideoController)Element).Duration = mediaElement.NaturalDuration.TimeSpan;
+                    ((IVideoPlayerController)Element).Duration = mediaElement.NaturalDuration.TimeSpan;
                 };
 
                 mediaElement.CurrentStateChanged += (sender, e) =>
@@ -38,11 +39,24 @@ namespace MediaHelpers.UWP
                 // MediaEnded, MediaFailed
 
 
+                mediaElement.RegisterPropertyChangedCallback(MediaElement.CanPauseProperty, (x, y) =>
+                {
+                    ((IVideoPlayerController)Element).CanPause = mediaElement.CanPause;
+                });
+
+                mediaElement.RegisterPropertyChangedCallback(MediaElement.CanSeekProperty, (x, y) =>
+                {
+                    ((IVideoPlayerController)Element).CanSeek = mediaElement.CanSeek;
+                });
+
+
                 SetNativeControl(mediaElement);
             }
 
             if (args.OldElement != null)
             {
+                args.OldElement.UpdateStatus -= OnUpdateStatus;
+
                 args.OldElement.PlayRequested -= OnPlayRequested;
                 args.OldElement.PauseRequested -= OnPauseRequested;
                 args.OldElement.StopRequested -= OnStopRequested;
@@ -54,7 +68,7 @@ namespace MediaHelpers.UWP
                 SetAutoPlay();
                 SetAreTransportControlsEnabled();
 
-                
+                args.NewElement.UpdateStatus += OnUpdateStatus;
 
                 args.NewElement.PlayRequested += OnPlayRequested;
                 args.NewElement.PauseRequested += OnPauseRequested;
@@ -108,6 +122,12 @@ namespace MediaHelpers.UWP
         void SetAreTransportControlsEnabled()
         {
             Control.AreTransportControlsEnabled = Element.AreTransportControlsEnabled;
+        }
+
+        // Event handler to update status
+        void OnUpdateStatus(object sender, EventArgs args)
+        {
+            ((IElementController)Element).SetValueFromRenderer(VideoPlayer.PositionProperty, Control.Position);
         }
 
         // Event handlers to implement methods

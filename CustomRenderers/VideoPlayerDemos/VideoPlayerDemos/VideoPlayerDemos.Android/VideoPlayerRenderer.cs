@@ -13,6 +13,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using System.ComponentModel;
+using Android.Media;
 
 [assembly: ExportRenderer(typeof(MediaHelpers.VideoPlayer),
                           typeof(MediaHelpers.Droid.VideoPlayerRenderer))]
@@ -41,6 +42,13 @@ namespace MediaHelpers.Droid
 
             if (args.OldElement != null)
             {
+                Control.Prepared -= OnVideoViewPrepared;
+                Control.Info -= OnVideoViewInfo;
+                Control.Completion -= OnVideoViewCompletion;
+                Control.Error -= OnVideoViewError;
+
+                args.OldElement.UpdateStatus -= OnUpdateStatus;
+
                 args.OldElement.PlayRequested -= OnPlayRequested;
                 args.OldElement.PauseRequested -= OnPauseRequested;
                 args.OldElement.StopRequested -= OnStopRequested;
@@ -51,11 +59,43 @@ namespace MediaHelpers.Droid
                 SetSource();
                 SetAreTransportControlsEnabled();
 
+                Control.Prepared += OnVideoViewPrepared;
+                Control.Info += OnVideoViewInfo;
+                Control.Completion += OnVideoViewCompletion;
+                Control.Error += OnVideoViewError;
+
+                args.NewElement.UpdateStatus += OnUpdateStatus;
+
                 args.NewElement.PlayRequested += OnPlayRequested;
                 args.NewElement.PauseRequested += OnPauseRequested;
                 args.NewElement.StopRequested += OnStopRequested;
             }
         }
+
+        // VideoView event handlers
+        private void OnVideoViewPrepared(object sender, EventArgs args)
+        {
+            ((IVideoPlayerController)Element).Duration = TimeSpan.FromMilliseconds(Control.Duration);
+        }
+
+        private void OnVideoViewInfo(object sender, MediaPlayer.InfoEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine("{0}", args.What);
+        }
+
+        private void OnVideoViewCompletion(object sender, EventArgs args)
+        {
+            ;
+        }
+
+        private void OnVideoViewError(object sender, MediaPlayer.ErrorEventArgs args)
+        {
+            ;
+        }
+
+
+
+
 
         public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
         {
@@ -123,6 +163,12 @@ namespace MediaHelpers.Droid
                     mediaController = null;
                 }
             }
+        }
+
+        // Event handler to update status
+        void OnUpdateStatus(object sender, EventArgs args)
+        {
+            ((IElementController)Element).SetValueFromRenderer(VideoPlayer.PositionProperty, TimeSpan.FromMilliseconds(Control.CurrentPosition));
         }
 
         // Event handlers to implement methods

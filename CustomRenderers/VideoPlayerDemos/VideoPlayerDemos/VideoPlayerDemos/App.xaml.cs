@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+[assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 
 namespace VideoPlayerDemos
 {
@@ -13,7 +16,7 @@ namespace VideoPlayerDemos
         {
             InitializeComponent();
 
-            MainPage = new VideoPlayerDemos.MainPage();
+            MainPage = new NavigationPage(new MainPage());
         }
 
         protected override void OnStart()

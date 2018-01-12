@@ -17,6 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <media:VideoPlayer x:Name="videoPlayer"
@@ -30,19 +31,38 @@
 
         <StackLayout Grid.Row="1"
                      Orientation="Horizontal">
+            
+            <Button Text="Load"
+                    Clicked="OnLoadButtonClicked" />
+
             <Button Text="Play"
                     Clicked="OnPlayButtonClicked" />
 
             <Button Text="Pause"
-                    Clicked="OnPauseButtonClicked" />
+                    Clicked="OnPauseButtonClicked"
+                    IsEnabled="{Binding Source={x:Reference videoPlayer},
+                                        Path=CanPause}" />
 
             <Button Text="Stop"
                     Clicked="OnStopButtonClicked" />
+            
+            <Label Text="{Binding Source={x:Reference videoPlayer},
+                                  Path=Position,
+                                  StringFormat='{0:hh\\:mm\\:ss}'}" />
+
+            <Label Text="/" />
 
             <Label Text="{Binding Source={x:Reference videoPlayer},
                                   Path=Duration,
-                                  StringFormat='{0}'}" />
+                                  StringFormat='{0:hh\\:mm\\:ss}'}" />
         </StackLayout>
+
+        <Slider Grid.Row="2"
+                Minimum="-1"
+                Maximum="{Binding Source={x:Reference videoPlayer},
+                                  Path=Duration.TotalSeconds}"
+                Value="{Binding Source={x:Reference videoPlayer},
+                                Path=Position.TotalSeconds}" />
     </Grid>
 
    
