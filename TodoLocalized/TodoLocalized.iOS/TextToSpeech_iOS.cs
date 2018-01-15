@@ -24,8 +24,10 @@ namespace TodoLocalized
 			var speechSynthesizer = new AVSpeechSynthesizer ();
 
 			var speechUtterance = new AVSpeechUtterance (text) {
-				Rate = AVSpeechUtterance.MaximumSpeechRate/4,
-				Voice = AVSpeechSynthesisVoice.FromLanguage ("en-US"),
+                // decomment to slow down
+				// Rate = AVSpeechUtterance.MaximumSpeechRate/4,
+                // decomment to force English US
+				// Voice = AVSpeechSynthesisVoice.FromLanguage ("en-US"),
 				Volume = volume,
 				PitchMultiplier = pitch
 			};
